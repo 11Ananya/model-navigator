@@ -70,14 +70,14 @@ function ProblemCard({
     <div
       ref={ref}
       className={cn(
-        "card-glass p-6 hover-lift-3d scroll-fade-up",
+        "card-depth p-6 hover-lift scroll-fade-up",
         isVisible && "visible"
       )}
       style={{ transitionDelay: `${index * 100}ms` }}
     >
       <div className="flex items-start gap-4">
-        <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-          <Icon className="w-5 h-5 text-primary" />
+        <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center shrink-0">
+          <Icon className="w-5 h-5 text-muted-foreground" />
         </div>
         <div>
           <h3 className="font-semibold mb-1">{problem.title}</h3>

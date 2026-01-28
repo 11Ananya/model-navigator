@@ -109,53 +109,6 @@
     box-shadow: 0 0 40px -10px hsl(var(--glow) / 0.3);
   }
 
-  /* Enhanced glow with luminosity */
-  .glow-intense {
-    box-shadow: 
-      0 0 20px -5px hsl(var(--glow) / 0.4),
-      0 0 60px -10px hsl(var(--glow) / 0.2);
-  }
-
-  /* 3D Glassmorphism */
-  .glass-3d {
-    @apply backdrop-blur-xl border border-border/30;
-    background: linear-gradient(
-      135deg,
-      hsl(var(--card) / 0.8) 0%,
-      hsl(var(--card) / 0.6) 50%,
-      hsl(var(--card) / 0.4) 100%
-    );
-    box-shadow: 
-      0 8px 32px hsl(var(--foreground) / 0.08),
-      0 0 0 1px hsl(var(--border) / 0.5),
-      inset 0 1px 0 hsl(var(--background) / 0.2),
-      inset 0 -1px 0 hsl(var(--foreground) / 0.05);
-  }
-
-  .glass-3d-elevated {
-    @apply glass-3d;
-    transform: perspective(1000px) rotateX(2deg);
-    transform-style: preserve-3d;
-  }
-
-  /* Luminosity overlay effect */
-  .luminosity-overlay {
-    position: relative;
-  }
-
-  .luminosity-overlay::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(
-      ellipse at 50% 0%,
-      hsl(var(--glow) / 0.15) 0%,
-      transparent 60%
-    );
-    pointer-events: none;
-    z-index: 1;
-  }
-
   /* Card depth */
   .card-depth {
     @apply bg-card border border-border rounded-2xl;
@@ -173,15 +126,6 @@
       0 16px 32px hsl(var(--foreground) / 0.02);
   }
 
-  /* Glass card with 3D effect */
-  .card-glass {
-    @apply glass-3d rounded-2xl;
-  }
-
-  .card-glass-lg {
-    @apply glass-3d rounded-3xl;
-  }
-
   /* Hover lift effect */
   .hover-lift {
     @apply transition-all duration-300 ease-out;
@@ -193,19 +137,6 @@
       0 4px 8px hsl(var(--foreground) / 0.04),
       0 12px 24px hsl(var(--foreground) / 0.03),
       0 24px 48px hsl(var(--foreground) / 0.02);
-  }
-
-  /* 3D hover lift */
-  .hover-lift-3d {
-    @apply transition-all duration-300 ease-out;
-    transform-style: preserve-3d;
-  }
-
-  .hover-lift-3d:hover {
-    transform: perspective(1000px) translateY(-4px) rotateX(2deg);
-    box-shadow: 
-      0 20px 40px hsl(var(--foreground) / 0.08),
-      0 0 0 1px hsl(var(--glow) / 0.1);
   }
 
   /* Backdrop blur */
@@ -248,34 +179,4 @@
   .stagger-children.visible > *:nth-child(3) { transition-delay: 200ms; opacity: 1; transform: translateY(0); }
   .stagger-children.visible > *:nth-child(4) { transition-delay: 300ms; opacity: 1; transform: translateY(0); }
   .stagger-children.visible > *:nth-child(5) { transition-delay: 400ms; opacity: 1; transform: translateY(0); }
-
-  /* Arrow shift animation for buttons */
-  .arrow-shift {
-    @apply transition-transform duration-300 ease-out;
-  }
-
-  .group:hover .arrow-shift {
-    transform: translateX(4px);
-  }
-
-  /* Underline expand animation */
-  .underline-expand {
-    position: relative;
-  }
-
-  .underline-expand::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    width: 0;
-    height: 2px;
-    background: currentColor;
-    transition: all 0.3s ease-out;
-    transform: translateX(-50%);
-  }
-
-  .underline-expand:hover::after {
-    width: 100%;
-  }
 }
