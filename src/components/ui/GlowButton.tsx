@@ -1,6 +1,5 @@
 import * as React from "react";
-import { useRef, useState, useCallback } from "react";
-import { Slot } from "@radix-ui/react-slot";
+import { useState, useCallback } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
@@ -32,17 +31,17 @@ export interface GlowButtonProps
     VariantProps<typeof glowButtonVariants> {
   asChild?: boolean;
   showUnderline?: boolean;
+  href?: string;
 }
 
 const GlowButton = React.forwardRef<HTMLButtonElement, GlowButtonProps>(
-  ({ className, variant, size, asChild = false, showUnderline = false, children, ...props }, ref) => {
-    const buttonRef = useRef<HTMLButtonElement>(null);
+  ({ className, variant, size, asChild = false, showUnderline = false, children, href, ...props }, ref) => {
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
     const [isHovering, setIsHovering] = useState(false);
 
-    const handleMouseMove = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-      if (!buttonRef.current) return;
-      const rect = buttonRef.current.getBoundingClientRect();
+    const handleMouseMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
+      const target = e.currentTarget as HTMLElement;
+      const rect = target.getBoundingClientRect();
       setMousePosition({
         x: e.clientX - rect.left,
         y: e.clientY - rect.top,
@@ -52,45 +51,87 @@ const GlowButton = React.forwardRef<HTMLButtonElement, GlowButtonProps>(
     const handleMouseEnter = useCallback(() => setIsHovering(true), []);
     const handleMouseLeave = useCallback(() => setIsHovering(false), []);
 
-    const Comp = asChild ? Slot : "button";
+    const glowOverlay = (
+      <span
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        style={{
+          background: isHovering
+            ? `radial-gradient(120px circle at ${mousePosition.x}px ${mousePosition.y}px, hsl(var(--glow) / 0.4), transparent 60%)`
+            : "transparent",
+        }}
+      />
+    );
+
+    const underline = showUnderline && (
+      <span className="absolute bottom-2 left-1/2 h-[2px] w-0 -translate-x-1/2 bg-primary-foreground/80 transition-all duration-300 ease-out group-hover:w-[calc(100%-2rem)]" />
+    );
+
+    const baseClassName = cn(
+      glowButtonVariants({ variant, size, className }),
+      "animate-slide-in-blur"
+    );
+
+    // When asChild is true and href is provided, render as anchor
+    if (asChild && href) {
+      return (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={baseClassName}
+          onMouseMove={handleMouseMove}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          {glowOverlay}
+          <span className="relative z-10 flex items-center gap-2">
+            {children}
+          </span>
+          {underline}
+        </a>
+      );
+    }
+
+    // When asChild is true but we have React element children, wrap them
+    if (asChild && React.isValidElement(children)) {
+      const child = children as React.ReactElement<{
+        className?: string;
+        children?: React.ReactNode;
+      }>;
+      
+      return (
+        <span
+          className={baseClassName}
+          onMouseMove={handleMouseMove}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          {glowOverlay}
+          <span className="relative z-10 flex items-center gap-2">
+            {React.cloneElement(child, {
+              className: cn("contents", child.props.className),
+            })}
+          </span>
+          {underline}
+        </span>
+      );
+    }
 
     return (
-      <Comp
-        className={cn(
-          glowButtonVariants({ variant, size, className }),
-          "animate-slide-in-blur"
-        )}
-        ref={(node) => {
-          // Handle both refs
-          if (typeof ref === "function") ref(node);
-          else if (ref) ref.current = node;
-          (buttonRef as React.MutableRefObject<HTMLButtonElement | null>).current = node;
-        }}
+      <button
+        className={baseClassName}
+        ref={ref}
         onMouseMove={handleMouseMove}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         {...props}
       >
-        {/* Dynamic glow effect that follows mouse */}
-        <span
-          className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-          style={{
-            background: isHovering
-              ? `radial-gradient(120px circle at ${mousePosition.x}px ${mousePosition.y}px, hsl(var(--glow) / 0.4), transparent 60%)`
-              : "transparent",
-          }}
-        />
-
-        {/* Content wrapper with arrow shift */}
+        {glowOverlay}
         <span className="relative z-10 flex items-center gap-2">
           {children}
         </span>
-
-        {/* Underline expansion effect */}
-        {showUnderline && (
-          <span className="absolute bottom-2 left-1/2 h-[2px] w-0 -translate-x-1/2 bg-primary-foreground/80 transition-all duration-300 ease-out group-hover:w-[calc(100%-2rem)]" />
-        )}
-      </Comp>
+        {underline}
+      </button>
     );
   }
 );

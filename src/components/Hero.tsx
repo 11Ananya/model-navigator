@@ -72,18 +72,13 @@ export function Hero() {
           >
             <GlowButton
               asChild
+              href="https://infralens.example.com"
               size="lg"
               className="glow-intense"
               showUnderline
             >
-              <a
-                href="https://infralens.example.com"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Get model recommendations
-                <ExternalLink className="h-4 w-4 ml-1 arrow-shift" />
-              </a>
+              Get model recommendations
+              <ExternalLink className="h-4 w-4 arrow-shift" />
             </GlowButton>
             <GlowButton
               variant="outline"
@@ -92,7 +87,7 @@ export function Hero() {
               onClick={() => scrollToSection("how-it-works")}
             >
               How it works
-              <ArrowRight className="h-4 w-4 ml-1 arrow-shift" />
+              <ArrowRight className="h-4 w-4 arrow-shift" />
             </GlowButton>
           </div>
         </div>
