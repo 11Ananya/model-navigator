@@ -78,9 +78,9 @@ function InputPanel({
   setConfig: React.Dispatch<React.SetStateAction<DemoConfig>>;
 }) {
   return (
-    <div className="card-depth-lg p-6 space-y-6 sticky top-24">
+    <div className="card-glass-lg p-6 space-y-6 sticky top-24 glow-intense">
       <div className="flex items-center gap-2 mb-4">
-        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+        <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center animate-glow-pulse">
           <Zap className="w-4 h-4 text-primary" />
         </div>
         <h3 className="font-semibold">Configure Constraints</h3>
@@ -236,8 +236,8 @@ function ModelCard({
   return (
     <div
       className={cn(
-        "card-depth hover-lift overflow-hidden transition-all duration-300",
-        isPrimary && "ring-2 ring-primary/20"
+        "card-glass hover-lift-3d overflow-hidden transition-all duration-300",
+        isPrimary && "ring-2 ring-primary/30 glow-intense"
       )}
     >
       <div className="p-5">
@@ -321,7 +321,7 @@ function Stat({ label, value }: { label: string; value: string }) {
 
 function WarningCard({ model }: { model: ModelRecommendation }) {
   return (
-    <div className="card-depth border-destructive/30 bg-destructive/5 overflow-hidden">
+    <div className="card-glass border-destructive/30 bg-destructive/5 overflow-hidden">
       <div className="p-5">
         <div className="flex items-start gap-3">
           <div className="w-8 h-8 rounded-lg bg-destructive/10 flex items-center justify-center shrink-0">

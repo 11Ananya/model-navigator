@@ -70,13 +70,13 @@ function AudienceCard({
     <div
       ref={ref}
       className={cn(
-        "card-depth p-6 text-center hover-lift scroll-fade-up",
+        "card-glass p-6 text-center hover-lift-3d scroll-fade-up",
         isVisible && "visible"
       )}
       style={{ transitionDelay: `${index * 100}ms` }}
     >
-      <div className="w-12 h-12 rounded-2xl bg-secondary flex items-center justify-center mx-auto mb-4">
-        <Icon className="w-6 h-6 text-muted-foreground" />
+      <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+        <Icon className="w-6 h-6 text-primary" />
       </div>
       <h3 className="font-semibold mb-2">{audience.title}</h3>
       <p className="text-sm text-muted-foreground leading-relaxed">
