@@ -70,7 +70,7 @@ function AudienceCard({
     <div
       ref={ref}
       className={cn(
-        "card-depth p-6 text-center hover-lift scroll-fade-up",
+        "card-depth light-interaction hover-lift-3d p-6 text-center scroll-fade-up",
         isVisible && "visible"
       )}
       style={{ transitionDelay: `${index * 100}ms` }}

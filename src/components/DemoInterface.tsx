@@ -16,15 +16,15 @@ import {
   gpuMemoryOptions,
   inferenceDevices,
   licenseTypes,
-  getRecommendations,
-  type DemoConfig,
+  type RecommendationConfig,
   type ModelRecommendation,
-} from "@/data/modelData";
+} from "@/lib/schemas";
+import { getRecommendations } from "@/lib/recommend";
 
 export function DemoInterface() {
   const { ref, isVisible } = useScrollAnimation<HTMLDivElement>();
 
-  const [config, setConfig] = useState<DemoConfig>({
+  const [config, setConfig] = useState<RecommendationConfig>({
     taskType: "text-generation",
     gpuMemory: "16gb",
     inferenceDevice: "consumer-gpu",
@@ -74,11 +74,11 @@ function InputPanel({
   config,
   setConfig,
 }: {
-  config: DemoConfig;
-  setConfig: React.Dispatch<React.SetStateAction<DemoConfig>>;
+  config: RecommendationConfig;
+  setConfig: React.Dispatch<React.SetStateAction<RecommendationConfig>>;
 }) {
   return (
-    <div className="card-depth-lg p-6 space-y-6 sticky top-24">
+    <div className="glass-card light-interaction p-6 space-y-6 sticky top-24">
       <div className="flex items-center gap-2 mb-4">
         <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
           <Zap className="w-4 h-4 text-primary" />
@@ -236,7 +236,7 @@ function ModelCard({
   return (
     <div
       className={cn(
-        "card-depth hover-lift overflow-hidden transition-all duration-300",
+        "card-depth light-interaction hover-lift-3d overflow-hidden transition-all duration-300",
         isPrimary && "ring-2 ring-primary/20"
       )}
     >

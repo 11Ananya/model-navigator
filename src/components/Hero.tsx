@@ -1,5 +1,6 @@
-import { ArrowRight, ExternalLink } from "lucide-react";
-import { Button } from "./ui/button";
+import { ArrowRight } from "lucide-react";
+import { PremiumCTA } from "./ui/premium-cta";
+import { MaskedHeadline } from "./MaskedHeadline";
 
 export function Hero() {
   const scrollToSection = (id: string) => {
@@ -22,17 +23,18 @@ export function Hero() {
             ML Infrastructure Decision Support
           </div>
 
-          {/* Headline */}
-          <h1 
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 animate-fade-in-up"
-            style={{ animationDelay: "100ms" }}
-          >
-            Open-Source LLM
-            <br />
-            <span className="text-muted-foreground">Infrastructure</span>
-            <br />
-            Decision Support
-          </h1>
+          {/* Headline with masked animation */}
+          <div className="mb-6">
+            <MaskedHeadline className="mb-2">
+              Open-Source LLM
+            </MaskedHeadline>
+            <MaskedHeadline className="text-muted-foreground mb-2">
+              Infrastructure
+            </MaskedHeadline>
+            <MaskedHeadline>
+              Decision Support
+            </MaskedHeadline>
+          </div>
 
           {/* Tagline */}
           <p 
@@ -56,29 +58,19 @@ export function Hero() {
             className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up"
             style={{ animationDelay: "400ms" }}
           >
-            <Button
-              asChild
-              size="lg"
-              className="rounded-xl text-base px-8 h-12 glow"
+            <PremiumCTA
+              href="https://infralens.example.com"
+              icon="external"
             >
-              <a
-                href="https://infralens.example.com"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Get model recommendations
-                <ExternalLink className="h-4 w-4 ml-2" />
-              </a>
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="rounded-xl text-base px-8 h-12"
+              Get model recommendations
+            </PremiumCTA>
+            <PremiumCTA
               onClick={() => scrollToSection("how-it-works")}
+              variant="secondary"
+              icon="arrow"
             >
               How it works
-              <ArrowRight className="h-4 w-4 ml-2" />
-            </Button>
+            </PremiumCTA>
           </div>
         </div>
 

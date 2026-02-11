@@ -33,7 +33,7 @@ export function DifferentiatorSection() {
         </div>
 
         <div className="max-w-2xl mx-auto">
-          <div className="card-depth-lg p-8">
+          <div className="card-depth-lg light-interaction p-8">
             <div className="grid sm:grid-cols-2 gap-4">
               {differentiators.map((item, index) => (
                 <DifferentiatorItem key={item.text} item={item} index={index} />

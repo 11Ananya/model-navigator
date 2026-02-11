@@ -109,21 +109,23 @@
     box-shadow: 0 0 40px -10px hsl(var(--glow) / 0.3);
   }
 
-  /* Card depth */
+  /* Card depth with enhanced glassmorphism */
   .card-depth {
-    @apply bg-card border border-border rounded-2xl;
+    @apply bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl;
     box-shadow: 
       0 1px 2px hsl(var(--foreground) / 0.03),
       0 4px 8px hsl(var(--foreground) / 0.02),
-      0 8px 16px hsl(var(--foreground) / 0.01);
+      0 8px 16px hsl(var(--foreground) / 0.01),
+      inset 0 1px 0 hsl(var(--background) / 0.3);
   }
 
   .card-depth-lg {
-    @apply bg-card border border-border rounded-3xl;
+    @apply bg-card/80 backdrop-blur-sm border border-border/50 rounded-3xl;
     box-shadow: 
       0 2px 4px hsl(var(--foreground) / 0.03),
       0 8px 16px hsl(var(--foreground) / 0.03),
-      0 16px 32px hsl(var(--foreground) / 0.02);
+      0 16px 32px hsl(var(--foreground) / 0.02),
+      inset 0 1px 0 hsl(var(--background) / 0.4);
   }
 
   /* Hover lift effect */
@@ -139,9 +141,62 @@
       0 24px 48px hsl(var(--foreground) / 0.02);
   }
 
-  /* Backdrop blur */
+  /* Subtle Z-lift with enhanced shadow */
+  .hover-lift-3d {
+    @apply transition-all duration-300 ease-out;
+  }
+
+  .hover-lift-3d:hover {
+    transform: translateY(-3px) translateZ(0);
+    box-shadow: 
+      0 6px 12px hsl(var(--foreground) / 0.05),
+      0 16px 32px hsl(var(--foreground) / 0.04),
+      0 32px 64px hsl(var(--foreground) / 0.02);
+  }
+
+  /* Enhanced glassmorphism */
   .glass {
     @apply backdrop-blur-xl bg-background/80 border-b border-border/50;
+    box-shadow: 
+      0 1px 2px hsl(var(--foreground) / 0.02),
+      0 4px 8px hsl(var(--foreground) / 0.01);
+  }
+
+  /* Glassmorphism card variant */
+  .glass-card {
+    @apply backdrop-blur-xl bg-card/60 border border-border/50 rounded-2xl;
+    box-shadow: 
+      0 1px 2px hsl(var(--foreground) / 0.03),
+      0 4px 8px hsl(var(--foreground) / 0.02),
+      0 8px 16px hsl(var(--foreground) / 0.01),
+      inset 0 1px 0 hsl(var(--background) / 0.5);
+  }
+
+  /* Light interaction layer */
+  .light-interaction {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .light-interaction::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(
+      circle at center,
+      hsl(var(--primary) / 0.03) 0%,
+      transparent 70%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  .light-interaction:hover::before {
+    opacity: 1;
   }
 
   /* Scroll animation classes */
@@ -179,4 +234,36 @@
   .stagger-children.visible > *:nth-child(3) { transition-delay: 200ms; opacity: 1; transform: translateY(0); }
   .stagger-children.visible > *:nth-child(4) { transition-delay: 300ms; opacity: 1; transform: translateY(0); }
   .stagger-children.visible > *:nth-child(5) { transition-delay: 400ms; opacity: 1; transform: translateY(0); }
+}
+
+.glass {
+  position: fixed;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+  width: 20rem;
+  height: 20rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .08);
+  border: 2px solid transparent;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, .6), 0 16px 32px rgba(0, 0, 0, .12);
+  backdrop-filter: url(#frosted);
+  -webkit-backdrop-filter: url(#frosted);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  outline: 0;
+}
+
+.glass::before,
+.glass::after {
+  content: "";
+  position: absolute;
+  width: 40%;
+  height: 10px;
+  background: #fff;
+  border-radius: 10px;
+}
+
+.glass::after {
+  transform: rotate(90deg);
 }

@@ -1,58 +1,16 @@
-export interface ModelRecommendation {
-  id: string;
-  name: string;
-  provider: string;
-  parameters: string;
-  memoryRequired: string;
-  latency: string;
-  license: string;
-  score: number;
-  reasoning: string;
-  tradeoffs: string[];
-  isWarning?: boolean;
-}
+/**
+ * Model database for InfraLens
+ * 
+ * Contains curated model metadata organized by task type.
+ * This is static data - no business logic here.
+ */
 
-export interface DemoConfig {
-  taskType: string;
-  gpuMemory: string;
-  inferenceDevice: string;
-  maxLatency: number;
-  licenseType: string;
-}
+import type { ModelRecommendation, TaskType } from "./schemas";
 
-export const taskTypes = [
-  { value: "text-generation", label: "Text Generation" },
-  { value: "classification", label: "Text Classification" },
-  { value: "summarization", label: "Summarization" },
-  { value: "question-answering", label: "Question Answering" },
-  { value: "code-generation", label: "Code Generation" },
-  { value: "embedding", label: "Text Embeddings" },
-];
-
-export const gpuMemoryOptions = [
-  { value: "8gb", label: "8 GB" },
-  { value: "16gb", label: "16 GB" },
-  { value: "24gb", label: "24 GB" },
-  { value: "40gb", label: "40 GB" },
-  { value: "80gb", label: "80 GB+" },
-];
-
-export const inferenceDevices = [
-  { value: "consumer-gpu", label: "Consumer GPU (RTX 3090/4090)" },
-  { value: "datacenter-gpu", label: "Datacenter GPU (A100/H100)" },
-  { value: "cpu-only", label: "CPU Only" },
-  { value: "apple-silicon", label: "Apple Silicon (M1/M2/M3)" },
-];
-
-export const licenseTypes = [
-  { value: "any", label: "Any License" },
-  { value: "permissive", label: "Permissive (MIT, Apache)" },
-  { value: "commercial", label: "Commercial Use Allowed" },
-  { value: "non-commercial", label: "Non-Commercial Only" },
-];
-
-// Sample model data that changes based on configuration
-const modelDatabase: Record<string, ModelRecommendation[]> = {
+/**
+ * Model database organized by task type
+ */
+export const modelDatabase: Record<TaskType, ModelRecommendation[]> = {
   "text-generation": [
     {
       id: "llama-3.1-8b",
@@ -283,7 +241,10 @@ const modelDatabase: Record<string, ModelRecommendation[]> = {
   ],
 };
 
-const warningModels: Record<string, ModelRecommendation> = {
+/**
+ * Models to avoid (warnings) organized by task type
+ */
+export const warningModels: Record<TaskType, ModelRecommendation> = {
   "text-generation": {
     id: "gpt2-large",
     name: "GPT-2 Large",
@@ -363,60 +324,3 @@ const warningModels: Record<string, ModelRecommendation> = {
     isWarning: true,
   },
 };
-
-export function getRecommendations(config: DemoConfig): {
-  primary: ModelRecommendation;
-  alternatives: ModelRecommendation[];
-  warning: ModelRecommendation;
-} {
-  const models = modelDatabase[config.taskType] || modelDatabase["text-generation"];
-  const warning = warningModels[config.taskType] || warningModels["text-generation"];
-
-  // Filter based on GPU memory (simplified logic for demo)
-  let filteredModels = [...models];
-  
-  if (config.gpuMemory === "8gb") {
-    filteredModels = models.filter(m => 
-      parseFloat(m.memoryRequired) <= 8 || m.memoryRequired.includes("MB")
-    );
-  } else if (config.gpuMemory === "16gb") {
-    filteredModels = models.filter(m => 
-      parseFloat(m.memoryRequired) <= 16 || m.memoryRequired.includes("MB")
-    );
-  }
-
-  // If filtering removed all models, use originals
-  if (filteredModels.length === 0) {
-    filteredModels = models;
-  }
-
-  // Filter by license
-  if (config.licenseType === "permissive") {
-    const permissive = filteredModels.filter(m => 
-      m.license.includes("MIT") || m.license.includes("Apache")
-    );
-    if (permissive.length > 0) filteredModels = permissive;
-  }
-
-  // Sort by score (adjusted for latency preference)
-  const sortedModels = filteredModels.sort((a, b) => {
-    let scoreA = a.score;
-    let scoreB = b.score;
-    
-    // Boost lower latency models if user wants < 100ms
-    if (config.maxLatency < 100) {
-      const latencyA = parseInt(a.latency) || 50;
-      const latencyB = parseInt(b.latency) || 50;
-      scoreA += (100 - latencyA) * 0.1;
-      scoreB += (100 - latencyB) * 0.1;
-    }
-    
-    return scoreB - scoreA;
-  });
-
-  return {
-    primary: sortedModels[0],
-    alternatives: sortedModels.slice(1, 3),
-    warning,
-  };
-}
