@@ -5,13 +5,11 @@
  * No LLM inference - all decisions are based on explicit rules.
  */
 
-import type { 
-  ModelRecommendation, 
-  RecommendationConfig, 
+import type {
+  ModelRecommendation,
+  RecommendationConfig,
   RecommendationResult,
-  TaskType 
 } from "./schemas";
-import { modelDatabase, warningModels } from "./models";
 
 /**
  * Parse memory requirement string to numeric GB value
@@ -108,14 +106,10 @@ function adjustScoreForLatency(
  * It applies deterministic filtering and scoring rules.
  */
 export function getRecommendations(
-  config: RecommendationConfig
+  config: RecommendationConfig,
+  allModels: ModelRecommendation[],
+  warning: ModelRecommendation
 ): RecommendationResult {
-  const taskType = config.taskType as TaskType;
-  
-  // Get models for this task type, fallback to text-generation
-  const allModels = modelDatabase[taskType] || modelDatabase["text-generation"];
-  const warning = warningModels[taskType] || warningModels["text-generation"];
-  
   // Start with all models
   let filteredModels = [...allModels];
   
@@ -149,7 +143,7 @@ export function getRecommendations(
   const resultModels: ModelRecommendation[] = sortedModels.map(({ adjustedScore, ...model }) => model);
   
   return {
-    primary: resultModels[0] || allModels[0],
+    primary: resultModels[0] ?? allModels[0],
     alternatives: resultModels.slice(1, 3),
     warning,
   };

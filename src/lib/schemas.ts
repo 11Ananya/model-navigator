@@ -25,6 +25,10 @@ export interface RecommendationConfig {
   inferenceDevice: string;
   maxLatency: number;
   licenseType: string;
+  inferenceFramework: string;
+  quantization: string;
+  deploymentTarget: string;
+  useCaseDescription: string;
 }
 
 export interface RecommendationResult {
@@ -88,4 +92,28 @@ export const licenseTypes = [
   { value: "permissive", label: "Permissive (MIT, Apache)" },
   { value: "commercial", label: "Commercial Use Allowed" },
   { value: "non-commercial", label: "Non-Commercial Only" },
+] as const;
+
+export const inferenceFrameworks = [
+  { value: "any", label: "Any Framework" },
+  { value: "transformers", label: "HuggingFace Transformers" },
+  { value: "llama.cpp", label: "llama.cpp" },
+  { value: "vllm", label: "vLLM" },
+  { value: "onnx", label: "ONNX Runtime" },
+  { value: "ollama", label: "Ollama" },
+] as const;
+
+export const quantizationOptions = [
+  { value: "none", label: "No Quantization (full precision)" },
+  { value: "int8", label: "INT8 (8-bit)" },
+  { value: "int4", label: "INT4 (4-bit)" },
+  { value: "gptq", label: "GPTQ" },
+  { value: "awq", label: "AWQ" },
+] as const;
+
+export const deploymentTargets = [
+  { value: "local-dev", label: "Local Development" },
+  { value: "on-prem-server", label: "On-Premises Server" },
+  { value: "cloud-vm", label: "Cloud VM (AWS/GCP/Azure)" },
+  { value: "edge-device", label: "Edge Device" },
 ] as const;
