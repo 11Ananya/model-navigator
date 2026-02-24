@@ -1,11 +1,9 @@
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
-import { ProblemSection } from "@/components/ProblemSection";
-import { HowItWorks } from "@/components/HowItWorks";
 import { DemoInterface } from "@/components/DemoInterface";
-import { AudienceSection } from "@/components/AudienceSection";
-import { DifferentiatorSection } from "@/components/DifferentiatorSection";
+import { HowItWorks } from "@/components/HowItWorks";
+import { WhySection } from "@/components/WhySection";
 import { Footer } from "@/components/Footer";
 
 const Index = () => {
@@ -15,11 +13,9 @@ const Index = () => {
         <Navbar />
         <main>
           <Hero />
-          <ProblemSection />
-          <HowItWorks />
           <DemoInterface />
-          <AudienceSection />
-          <DifferentiatorSection />
+          <HowItWorks />
+          <WhySection />
         </main>
         <Footer />
       </div>

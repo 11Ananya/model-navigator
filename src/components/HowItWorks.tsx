@@ -44,7 +44,7 @@ export function HowItWorks() {
             isVisible && "visible"
           )}
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          <h2 className="text-2xl md:text-3xl font-bold mb-4">
             How It Works
           </h2>
           <p className="text-lg text-muted-foreground">
@@ -91,7 +91,7 @@ export function HowItWorks() {
         <div className="max-w-2xl mx-auto mt-12">
           <div className="text-center text-sm text-muted-foreground bg-card/50 rounded-2xl p-4 border border-border/50">
             <span className="font-medium text-foreground">No live inference.</span>
-            {" "}Recommendations are based on curated metadata—not API calls to models.
+            {" "}Recommendations are based on curated metadata, not API calls to models.
           </div>
         </div>
       </div>

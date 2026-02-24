@@ -18,17 +18,17 @@ export function Footer() {
 
           {/* Links */}
           <div className="flex items-center gap-8">
-            <a 
-              href="#how-it-works" 
+            <a
+              href="#demo"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Demo
+            </a>
+            <a
+              href="#how-it-works"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               How it works
-            </a>
-            <a 
-              href="#who-its-for" 
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Who it's for
             </a>
           </div>
 
