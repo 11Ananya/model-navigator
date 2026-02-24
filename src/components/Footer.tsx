@@ -6,9 +6,7 @@ export function Footer() {
           {/* Logo & Description */}
           <div className="flex flex-col items-center md:items-start gap-2">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-xs">IL</span>
-              </div>
+              <img src="/logo.png" alt="InfraLens" className="w-8 h-8 rounded-lg object-cover" />
               <span className="font-semibold tracking-tight">InfraLens</span>
             </div>
             <p className="text-sm text-muted-foreground text-center md:text-left">

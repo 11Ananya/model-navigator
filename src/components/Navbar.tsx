@@ -26,29 +26,27 @@ export function Navbar() {
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 glass">
-        <nav className="container mx-auto px-6 py-4">
+        <nav className="container mx-auto px-6 py-2.5">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-sm">IL</span>
-              </div>
-              <span className="font-semibold text-lg tracking-tight">InfraLens</span>
+            <div className="flex items-center gap-2.5">
+              <img src="/logo.png" alt="InfraLens" className="w-7 h-7 rounded-md object-cover" />
+              <span className="font-semibold text-base tracking-[-0.03em]">InfraLens</span>
             </div>
 
             {/* Navigation Links */}
-            <div className="hidden md:flex items-center gap-8">
+            <div className="hidden md:flex items-center gap-6">
               <button
-                onClick={() => scrollToSection("how-it-works")}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                onClick={() => scrollToSection("demo")}
+                className="text-sm font-medium text-foreground/70 hover:text-foreground transition-colors"
               >
-                How it works
+                Demo
               </button>
               <button
-                onClick={() => scrollToSection("who-its-for")}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                onClick={() => scrollToSection("how-it-works")}
+                className="text-sm font-medium text-foreground/70 hover:text-foreground transition-colors"
               >
-                Who it's for
+                How it works
               </button>
             </div>
 
