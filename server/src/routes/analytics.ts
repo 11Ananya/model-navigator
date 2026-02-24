@@ -7,7 +7,7 @@ analyticsRouter.post("/event", async (c) => {
   const body = await c.req.json();
 
   // Fire-and-forget — don't let DB errors fail the client request
-  supabaseAdmin
+  supabaseAdmin()
     .from("analytics_events")
     .insert({
       user_id: body.userId ?? null,

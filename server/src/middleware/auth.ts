@@ -13,7 +13,7 @@ export const requireAuth = createMiddleware<{
   const {
     data: { user },
     error,
-  } = await supabaseAdmin.auth.getUser(token);
+  } = await supabaseAdmin().auth.getUser(token);
 
   if (error || !user) {
     return c.json({ error: "Invalid or expired token" }, 401);

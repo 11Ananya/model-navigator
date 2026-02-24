@@ -2,7 +2,9 @@ import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { getRecommendations } from "../services/recommend.js";
-import { getModelsForTask } from "../services/modelsFallback.js";
+import { getModelsForTask } from "../services/models.js";
+import { llmRerank } from "../services/llmRerank.js";
+import { recordRecommendationEvent } from "../services/analytics.js";
 
 const RecommendationConfigSchema = z.object({
   taskType: z.enum([
@@ -53,10 +55,45 @@ recommendationsRouter.post(
     }
   }),
   async (c) => {
+    const startTime = Date.now();
     const config = c.req.valid("json");
-    const { models, warningModel } = getModelsForTask(config.taskType);
-    const result = getRecommendations(config, models, warningModel);
+    const { models, warningModel } = await getModelsForTask(
+      config.taskType,
+      config.inferenceFramework,
+      config.quantization,
+      config.deploymentTarget
+    );
 
-    return c.json({ ...result, usedLlmReranking: false }, 200);
+    // Step 1: deterministic filter + score
+    const { primary, alternatives, warning } = getRecommendations(config, models, warningModel);
+    const candidates = [primary, ...alternatives];
+
+    // Step 2: if user described their use case, let Claude re-rank and rewrite reasoning
+    const useLlm = config.useCaseDescription.trim().length > 0 && !!process.env.ANTHROPIC_API_KEY;
+
+    if (useLlm) {
+      try {
+        const reranked = await llmRerank(candidates, warning, config);
+        recordRecommendationEvent({
+          config,
+          ...reranked,
+          usedLlmReranking: true,
+          responseTimeMs: Date.now() - startTime,
+        });
+        return c.json({ ...reranked, usedLlmReranking: true }, 200);
+      } catch (err) {
+        console.error("[recommendations] LLM rerank failed, falling back to deterministic:", err);
+      }
+    }
+
+    recordRecommendationEvent({
+      config,
+      primary,
+      alternatives,
+      warning,
+      usedLlmReranking: false,
+      responseTimeMs: Date.now() - startTime,
+    });
+    return c.json({ primary, alternatives, warning, usedLlmReranking: false }, 200);
   }
 );
