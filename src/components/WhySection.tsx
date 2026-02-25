@@ -19,7 +19,7 @@ export function WhySection() {
   return (
     <section
       ref={ref}
-      className={cn("py-24 md:py-32 scroll-fade-up", isVisible && "visible")}
+      className={cn("py-24 md:py-32 border-t border-border/50 scroll-fade-up", isVisible && "visible")}
     >
       <div className="container mx-auto px-6">
         <div className="max-w-5xl mx-auto grid md:grid-cols-5 gap-12 md:gap-16 items-start">

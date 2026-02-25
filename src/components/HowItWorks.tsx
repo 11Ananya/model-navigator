@@ -104,19 +104,16 @@ export function HowItWorks() {
   usePipelineTimeline(pipelineRef);
 
   return (
-    <section id="how-it-works" className="py-24 md:py-32">
+    <section id="how-it-works" className="py-24 md:py-32 border-t border-border/50">
       <div className="container mx-auto px-6 max-w-6xl">
         {/* ── Header ── */}
         <div className="mb-16">
-          <p className="font-mono text-primary text-sm mb-2 tracking-wider">
-            Pipeline
-          </p>
           <h2 className="text-2xl md:text-3xl font-bold mb-3">
-            How 847 models become your top&nbsp;3
+            How it works
           </h2>
           <p className="text-muted-foreground max-w-lg">
-            From the full universe of open models to a ranked shortlist,
-            filtered, scored, and selected in seconds.
+            847 models in, 3 out. Filtered by hard constraints,
+            scored by weighted tradeoffs, ranked in seconds.
           </p>
         </div>
 
