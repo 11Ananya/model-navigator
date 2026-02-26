@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ChevronDown, Zap, AlertTriangle, Check, Info, Sparkles, BookmarkPlus, Trash2, FolderOpen } from "lucide-react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { cn } from "@/lib/utils";
@@ -45,13 +45,33 @@ export function DemoInterface() {
   const { ref, isVisible } = useScrollAnimation<HTMLDivElement>();
   const [config, setConfig] = useState<RecommendationConfig>(DEFAULT_CONFIG);
   const { mutate, data: recommendations, isPending, isError } = useRecommendations();
+  const { user } = useAuth();
+
+  // Track whether the free request has been consumed (persists across page navigations)
+  const [freeUsed, setFreeUsed] = useState(
+    () => sessionStorage.getItem("infralens-free-used") === "1"
+  );
+  // Distinguishes user-initiated clicks from the auto-run on mount
+  const userClickedRef = useRef(false);
 
   // Auto-run once on mount so the landing page always shows an example
   useEffect(() => {
     mutate(DEFAULT_CONFIG);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleGetRecommendations = () => mutate(config);
+  // After a successful user-initiated request, consume the free try for anon users
+  useEffect(() => {
+    if (recommendations && !user && userClickedRef.current) {
+      sessionStorage.setItem("infralens-free-used", "1");
+      setFreeUsed(true);
+      userClickedRef.current = false;
+    }
+  }, [recommendations, user]);
+
+  const handleGetRecommendations = () => {
+    userClickedRef.current = true;
+    mutate(config);
+  };
 
   return (
     <section id="demo" className="py-24 md:py-32">
@@ -92,6 +112,7 @@ export function DemoInterface() {
                   setConfig={setConfig}
                   onGetRecommendations={handleGetRecommendations}
                   isPending={isPending}
+                  freeUsed={freeUsed}
                 />
               </div>
               <div className="lg:col-span-3">
@@ -115,11 +136,13 @@ function InputPanel({
   setConfig,
   onGetRecommendations,
   isPending,
+  freeUsed,
 }: {
   config: RecommendationConfig;
   setConfig: React.Dispatch<React.SetStateAction<RecommendationConfig>>;
   onGetRecommendations: () => void;
   isPending: boolean;
+  freeUsed: boolean;
 }) {
   const { user } = useAuth();
   const { configs, saveConfig, isSaving, deleteConfig } = useSavedConfigs();
@@ -400,8 +423,8 @@ function InputPanel({
         </Select>
       </div>
 
-      {/* Get Recommendations — requires sign-in */}
-      {user ? (
+      {/* Get Recommendations — first request free for anon users */}
+      {user || !freeUsed ? (
         <Button
           className="w-full rounded-xl gap-2"
           onClick={onGetRecommendations}
@@ -411,13 +434,18 @@ function InputPanel({
           {isPending ? "Finding models…" : "Get Recommendations"}
         </Button>
       ) : (
-        <Button
-          className="w-full rounded-xl gap-2"
-          onClick={() => setAuthOpen(true)}
-        >
-          <Zap className="w-4 h-4" />
-          Sign in to get recommendations
-        </Button>
+        <div className="space-y-2">
+          <Button
+            className="w-full rounded-xl gap-2"
+            onClick={() => setAuthOpen(true)}
+          >
+            <Zap className="w-4 h-4" />
+            Sign in to continue
+          </Button>
+          <p className="text-xs text-center text-muted-foreground">
+            First recommendation free — sign in for unlimited access
+          </p>
+        </div>
       )}
 
       {/* Save Config — logged-in users only */}

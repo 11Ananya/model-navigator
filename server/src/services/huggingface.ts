@@ -219,16 +219,62 @@ function generateReasoning(
     : "Community model from Hugging Face Hub.";
 }
 
-function generateTradeoffs(paramCount: number, license: string, daysSinceUpdate: number): string[] {
+function generateTradeoffs(
+  paramCount: number,
+  license: string,
+  daysSinceUpdate: number,
+  downloads: number,
+  likes: number,
+  modelId: string
+): string[] {
   const tradeoffs: string[] = [];
-  if (paramCount >= 13e9) tradeoffs.push("High memory requirements");
-  if (paramCount >= 30e9) tradeoffs.push("May require multi-GPU setup");
-  if (license !== "Apache 2.0" && license !== "MIT") {
-    tradeoffs.push("Review license terms before commercial use");
+  const lower = modelId.toLowerCase();
+
+  // ── Size-based tradeoffs ──
+  if (paramCount >= 30e9) {
+    tradeoffs.push("Requires multi-GPU or offloading for inference");
+  } else if (paramCount >= 13e9) {
+    tradeoffs.push("Needs a high-VRAM GPU (16 GB+) for full-precision inference");
+  } else if (paramCount >= 3e9) {
+    tradeoffs.push("Mid-size model — may underperform larger alternatives on complex reasoning");
+  } else if (paramCount >= 500e6) {
+    tradeoffs.push("Compact model — faster inference but limited on nuanced tasks");
+  } else {
+    tradeoffs.push("Very small model — best for narrow or well-defined tasks");
   }
-  if (daysSinceUpdate > 180) tradeoffs.push("Not recently updated");
-  if (tradeoffs.length === 0) tradeoffs.push("Verify suitability for your specific use case");
-  return tradeoffs;
+
+  // ── License ──
+  if (license !== "Apache 2.0" && license !== "MIT" && license !== "Unknown") {
+    tradeoffs.push("Review license terms before commercial deployment");
+  } else if (license === "Unknown") {
+    tradeoffs.push("License not specified — verify terms before use");
+  }
+
+  // ── Recency ──
+  if (daysSinceUpdate > 365) {
+    tradeoffs.push("Over a year since last update — may lack recent improvements");
+  } else if (daysSinceUpdate > 180) {
+    tradeoffs.push("Not recently maintained — verify compatibility with current tooling");
+  } else if (daysSinceUpdate <= 14) {
+    tradeoffs.push("Very recently published — less battle-tested in production");
+  }
+
+  // ── Community adoption ──
+  if (downloads < 10_000) {
+    tradeoffs.push("Low download count — limited community validation");
+  } else if (downloads < 100_000 && likes < 50) {
+    tradeoffs.push("Modest community adoption — fewer real-world usage reports");
+  }
+
+  // ── Architecture-specific hints ──
+  if (lower.includes("distil")) {
+    tradeoffs.push("Distilled variant — trades some accuracy for speed");
+  }
+  if (lower.includes("gptq") || lower.includes("awq") || lower.includes("gguf")) {
+    tradeoffs.push("Pre-quantized weights — slight quality loss vs. full precision");
+  }
+
+  return tradeoffs.slice(0, 3);
 }
 
 // ─── Main fetch function ────────────────────────────────────────────────────
@@ -332,7 +378,7 @@ export async function fetchFromHuggingFace(
       license,
       score: scoreModel(model, paramCount, maxDownloads, maxLikes, maxParams, license),
       reasoning: generateReasoning(model, paramCount, license),
-      tradeoffs: generateTradeoffs(paramCount, license, daysSinceUpdate),
+      tradeoffs: generateTradeoffs(paramCount, license, daysSinceUpdate, model.downloads, model.likes, model.modelId),
       isWarning: false,
     };
   });
