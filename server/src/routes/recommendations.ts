@@ -69,11 +69,18 @@ recommendationsRouter.post(
     const candidates = [primary, ...alternatives];
 
     // Step 2: if user described their use case, let Claude re-rank and rewrite reasoning
-    const useLlm = config.useCaseDescription.trim().length > 0 && !!process.env.ANTHROPIC_API_KEY;
+    const hasDescription = config.useCaseDescription.trim().length > 0;
+    const hasApiKey = !!process.env.ANTHROPIC_API_KEY;
+    const useLlm = hasDescription && hasApiKey;
+
+    console.log(`[recommendations] description="${config.useCaseDescription.slice(0, 60)}..." | hasDescription=${hasDescription} | hasApiKey=${hasApiKey} | useLlm=${useLlm}`);
+    console.log(`[recommendations] deterministic top pick: ${primary.name} (score=${primary.score})`);
 
     if (useLlm) {
       try {
+        console.log("[recommendations] calling LLM rerank...");
         const reranked = await llmRerank(candidates, warning, config);
+        console.log(`[recommendations] LLM rerank SUCCESS — top pick: ${reranked.primary.name} (score=${reranked.primary.score})`);
         recordRecommendationEvent({
           config,
           ...reranked,
@@ -82,7 +89,7 @@ recommendationsRouter.post(
         });
         return c.json({ ...reranked, usedLlmReranking: true }, 200);
       } catch (err) {
-        console.error("[recommendations] LLM rerank failed, falling back to deterministic:", err);
+        console.error("[recommendations] LLM rerank FAILED, falling back to deterministic:", err);
       }
     }
 

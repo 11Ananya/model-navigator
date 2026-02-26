@@ -189,7 +189,7 @@ export function Hero() {
             className="hidden lg:block animate-fade-in-up"
             style={{ animationDelay: "500ms" }}
           >
-            <div className="rounded-xl border border-border/60 bg-[#0a0a0b] overflow-hidden shadow-2xl shadow-black/20">
+            <div className="rounded-xl border border-border bg-[#0a0a0b] overflow-hidden shadow-2xl shadow-black/25">
               {/* Title bar */}
               <div className="flex items-center gap-2 px-4 py-3 border-b border-white/[0.06] bg-white/[0.02]">
                 <div className="flex gap-2">
@@ -249,7 +249,7 @@ export function Hero() {
 
       {/* Rolling model tickers */}
       <div className="absolute bottom-6 left-0 right-0 space-y-2 overflow-hidden pointer-events-none animate-fade-in" style={{ animationDelay: "1200ms" }}>
-        <div className="model-ticker whitespace-nowrap text-xs font-mono text-muted-foreground/50 dark:text-muted-foreground/30">
+        <div className="model-ticker whitespace-nowrap text-xs font-mono text-muted-foreground/40">
           <span className="inline-block">
             meta-llama/Llama-3.1-70B&nbsp;&nbsp;·&nbsp;&nbsp;mistralai/Mixtral-8x7B-v0.1&nbsp;&nbsp;·&nbsp;&nbsp;google/gemma-2-27b&nbsp;&nbsp;·&nbsp;&nbsp;Qwen/Qwen2.5-72B&nbsp;&nbsp;·&nbsp;&nbsp;microsoft/phi-3-medium-128k&nbsp;&nbsp;·&nbsp;&nbsp;NousResearch/Hermes-3-Llama-3.1-8B&nbsp;&nbsp;·&nbsp;&nbsp;deepseek-ai/DeepSeek-V2.5&nbsp;&nbsp;·&nbsp;&nbsp;01-ai/Yi-1.5-34B&nbsp;&nbsp;·&nbsp;&nbsp;tiiuae/falcon-40b&nbsp;&nbsp;·&nbsp;&nbsp;stabilityai/stablelm-2-12b&nbsp;&nbsp;·&nbsp;&nbsp;
           </span>
@@ -257,7 +257,7 @@ export function Hero() {
             meta-llama/Llama-3.1-70B&nbsp;&nbsp;·&nbsp;&nbsp;mistralai/Mixtral-8x7B-v0.1&nbsp;&nbsp;·&nbsp;&nbsp;google/gemma-2-27b&nbsp;&nbsp;·&nbsp;&nbsp;Qwen/Qwen2.5-72B&nbsp;&nbsp;·&nbsp;&nbsp;microsoft/phi-3-medium-128k&nbsp;&nbsp;·&nbsp;&nbsp;NousResearch/Hermes-3-Llama-3.1-8B&nbsp;&nbsp;·&nbsp;&nbsp;deepseek-ai/DeepSeek-V2.5&nbsp;&nbsp;·&nbsp;&nbsp;01-ai/Yi-1.5-34B&nbsp;&nbsp;·&nbsp;&nbsp;tiiuae/falcon-40b&nbsp;&nbsp;·&nbsp;&nbsp;stabilityai/stablelm-2-12b&nbsp;&nbsp;·&nbsp;&nbsp;
           </span>
         </div>
-        <div className="model-ticker-reverse whitespace-nowrap text-xs font-mono text-muted-foreground/50 dark:text-muted-foreground/30">
+        <div className="model-ticker-reverse whitespace-nowrap text-xs font-mono text-muted-foreground/40">
           <span className="inline-block">
             THUDM/glm-4-9b&nbsp;&nbsp;·&nbsp;&nbsp;databricks/dbrx-instruct&nbsp;&nbsp;·&nbsp;&nbsp;allenai/OLMo-7B&nbsp;&nbsp;·&nbsp;&nbsp;upstage/SOLAR-10.7B-v1.0&nbsp;&nbsp;·&nbsp;&nbsp;HuggingFaceH4/zephyr-7b-beta&nbsp;&nbsp;·&nbsp;&nbsp;CohereForAI/c4ai-command-r-v01&nbsp;&nbsp;·&nbsp;&nbsp;bigcode/starcoder2-15b&nbsp;&nbsp;·&nbsp;&nbsp;mosaicml/mpt-30b&nbsp;&nbsp;·&nbsp;&nbsp;EleutherAI/gpt-neox-20b&nbsp;&nbsp;·&nbsp;&nbsp;teknium/OpenHermes-2.5-Mistral-7B&nbsp;&nbsp;·&nbsp;&nbsp;
           </span>

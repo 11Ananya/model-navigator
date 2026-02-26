@@ -91,6 +91,120 @@ function adjustScoreForLatency(
   return model.score + (100 - modelLatency) * 0.1;
 }
 
+// ─── Use-case keyword matching ───────────────────────────────────────────────
+
+/** Keyword clusters that signal preferences for certain model traits. */
+const USE_CASE_SIGNALS: {
+  keywords: string[];
+  prefer: (m: ModelRecommendation) => boolean;
+  weight: number;
+}[] = [
+  // User mentions speed / real-time → prefer low-latency (small) models
+  {
+    keywords: ["fast", "real-time", "realtime", "low latency", "speed", "quick", "responsive", "streaming"],
+    prefer: (m) => parseLatency(m.latency) <= 30 || parseMemoryGB(m.memoryRequired) <= 4,
+    weight: 10,
+  },
+  // User mentions efficiency / edge / mobile / lightweight
+  {
+    keywords: ["edge", "mobile", "lightweight", "efficient", "small", "tiny", "embedded", "raspberry", "phone", "iot"],
+    prefer: (m) => parseMemoryGB(m.memoryRequired) <= 4,
+    weight: 12,
+  },
+  // User mentions quality / accuracy / complex / reasoning
+  {
+    keywords: ["accurate", "accuracy", "quality", "complex", "reasoning", "nuanced", "sophisticated", "advanced", "best"],
+    prefer: (m) => parseMemoryGB(m.memoryRequired) >= 8,
+    weight: 8,
+  },
+  // User mentions production / enterprise / commercial
+  {
+    keywords: ["production", "enterprise", "commercial", "business", "company", "deploy", "scale"],
+    prefer: (m) => isPermissiveLicense(m.license),
+    weight: 8,
+  },
+  // User mentions code-related tasks
+  {
+    keywords: ["code", "coding", "programming", "developer", "ide", "copilot", "autocomplete", "software"],
+    prefer: (m) => {
+      const n = (m.name + " " + m.id).toLowerCase();
+      return n.includes("code") || n.includes("coder") || n.includes("starcoder") || n.includes("deepseek");
+    },
+    weight: 10,
+  },
+  // User mentions chat / conversation / assistant
+  {
+    keywords: ["chat", "chatbot", "conversation", "assistant", "support", "customer service", "helpdesk"],
+    prefer: (m) => {
+      const n = (m.name + " " + m.id).toLowerCase();
+      return n.includes("instruct") || n.includes("chat") || n.includes("hermes");
+    },
+    weight: 8,
+  },
+  // User mentions privacy / on-prem / self-hosted / local
+  {
+    keywords: ["privacy", "private", "on-prem", "on-premise", "self-hosted", "local", "offline", "air-gap"],
+    prefer: (m) => isPermissiveLicense(m.license) && parseMemoryGB(m.memoryRequired) <= 16,
+    weight: 6,
+  },
+  // User mentions cost / budget / cheap / free
+  {
+    keywords: ["cost", "budget", "cheap", "free", "affordable", "economical", "save money"],
+    prefer: (m) => parseMemoryGB(m.memoryRequired) <= 8,
+    weight: 8,
+  },
+  // User mentions summarization / documents / legal / medical
+  {
+    keywords: ["summarize", "summarization", "document", "legal", "medical", "clinical", "report", "paper"],
+    prefer: (m) => {
+      const n = (m.name + " " + m.id).toLowerCase();
+      return n.includes("bart") || n.includes("t5") || n.includes("flan") || parseMemoryGB(m.memoryRequired) >= 8;
+    },
+    weight: 8,
+  },
+  // User mentions multilingual / translation
+  {
+    keywords: ["multilingual", "translation", "translate", "language", "spanish", "french", "chinese", "german", "japanese"],
+    prefer: (m) => {
+      const n = (m.name + " " + m.id).toLowerCase();
+      return n.includes("e5") || n.includes("multilingual") || n.includes("llama") || n.includes("qwen");
+    },
+    weight: 8,
+  },
+];
+
+function adjustScoreForUseCase(
+  model: ModelRecommendation,
+  description: string
+): number {
+  if (!description.trim()) return 0;
+
+  const lower = description.toLowerCase();
+  let bonus = 0;
+
+  for (const signal of USE_CASE_SIGNALS) {
+    const matched = signal.keywords.some((kw) => lower.includes(kw));
+    if (matched && signal.prefer(model)) {
+      bonus += signal.weight;
+    }
+  }
+
+  // Also boost models whose name/provider appears directly in the description
+  const modelTerms = [
+    model.name.toLowerCase(),
+    model.provider.toLowerCase(),
+    model.id.toLowerCase(),
+  ];
+  for (const term of modelTerms) {
+    if (term.length >= 3 && lower.includes(term)) {
+      bonus += 15;
+      break; // don't double-count
+    }
+  }
+
+  return Math.min(bonus, 25); // cap at 25-point max boost
+}
+
 // ─── Main entry point ─────────────────────────────────────────────────────────
 
 export function getRecommendations(
@@ -111,9 +225,13 @@ export function getRecommendations(
   const licFiltered = filterByLicense(filtered, config.licenseType);
   if (licFiltered.length > 0) filtered = licFiltered;
 
-  // Score + sort
+  // Score + sort (latency + use-case adjustments)
   const sorted = filtered
-    .map((m) => ({ ...m, _adj: adjustScoreForLatency(m, config.maxLatency) }))
+    .map((m) => ({
+      ...m,
+      _adj: adjustScoreForLatency(m, config.maxLatency)
+        + adjustScoreForUseCase(m, config.useCaseDescription),
+    }))
     .sort((a, b) => b._adj - a._adj)
     .map(({ _adj, ...m }) => m);
 

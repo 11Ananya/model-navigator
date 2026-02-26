@@ -72,7 +72,7 @@ export function DemoInterface() {
         </div>
 
         {/* Window container */}
-        <div className="max-w-6xl mx-auto border border-border rounded-2xl overflow-hidden bg-card">
+        <div className="max-w-6xl mx-auto border border-border rounded-2xl overflow-hidden bg-card shadow-sm">
           {/* Title bar */}
           <div className="flex items-center gap-2 px-4 py-3 border-b border-border bg-secondary/40">
             <span className="w-3 h-3 rounded-full bg-border" />
@@ -84,7 +84,7 @@ export function DemoInterface() {
           </div>
 
           {/* Panel contents */}
-          <div className="p-6 md:p-8">
+          <div className="p-6 md:p-8" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif' }}>
             <div className="grid lg:grid-cols-5 gap-8">
               <div className="lg:col-span-2">
                 <InputPanel

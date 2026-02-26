@@ -83,11 +83,14 @@ Return a JSON array with one object per model, ordered from best to worst fit fo
   const rawText =
     message.content[0].type === "text" ? message.content[0].text : "";
 
+  console.log("[llmRerank] raw Claude response:", rawText.slice(0, 500));
+
   let rankings: LlmRanking[];
   try {
     // Strip any accidental markdown fences
     const cleaned = rawText.replace(/```(?:json)?/g, "").trim();
     rankings = JSON.parse(cleaned);
+    console.log(`[llmRerank] parsed ${rankings.length} rankings:`, rankings.map(r => `${r.id}=${r.fitScore}`).join(", "));
   } catch {
     // If Claude returns malformed JSON, fall back to original ordering
     console.error("[llmRerank] Failed to parse LLM response, using original order");

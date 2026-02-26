@@ -62,7 +62,7 @@ export default {
       },
       fontFamily: {
         sans: [
-          "Google Sans",
+          "Urbanist",
           "-apple-system",
           "BlinkMacSystemFont",
           "Segoe UI",

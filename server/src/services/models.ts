@@ -1,10 +1,11 @@
 /**
- * Phase 3: DB-backed model service with 1-minute in-memory cache.
- * Falls back to hardcoded data if Supabase is unavailable.
+ * Phase 6: Model service with HF API → Supabase → hardcoded fallback chain.
+ * 1-minute in-memory cache on final results; HF layer has its own 1-hour cache.
  */
 
 import { supabaseAdmin } from "../lib/supabase.js";
 import { getModelsForTask as getFallback } from "./modelsFallback.js";
+import { fetchFromHuggingFace } from "./huggingface.js";
 import type { ModelRecommendation } from "./recommend.js";
 
 interface DbRow {
@@ -57,6 +58,23 @@ export async function getModelsForTask(
   const cached = modelCache.get(cacheKey);
   if (cached && cached.expiresAt > now) return cached.data;
 
+  // ── Layer 1: Hugging Face API (primary, with its own 1-hour cache) ──
+  try {
+    const hfModels = await fetchFromHuggingFace(taskType, framework, quantization, deploymentTarget);
+    if (hfModels.length > 0) {
+      const fallback = getFallback(taskType);
+      const result: TaskModelResult = {
+        models: hfModels,
+        warningModel: fallback.warningModel, // warnings stay hardcoded
+      };
+      modelCache.set(cacheKey, { data: result, expiresAt: now + CACHE_TTL_MS });
+      return result;
+    }
+  } catch (hfErr) {
+    console.warn("[Models] HF API unavailable, falling back to Supabase:", hfErr);
+  }
+
+  // ── Layer 2: Supabase DB ──
   try {
     let query = supabaseAdmin()
       .from("models")
@@ -94,7 +112,7 @@ export async function getModelsForTask(
     modelCache.set(cacheKey, { data: result, expiresAt: now + CACHE_TTL_MS });
     return result;
   } catch {
-    // Supabase unavailable or not configured — use hardcoded fallback silently
+    // ── Layer 3: Hardcoded fallback ──
     return getFallback(taskType);
   }
 }
@@ -107,6 +125,33 @@ export async function getAllModels(): Promise<ModelRecommendation[]> {
   const cached = modelCache.get(cacheKey);
   if (cached && cached.expiresAt > now) return cached.data.models;
 
+  // ── Layer 1: HF API — fetch all major task types ──
+  try {
+    const tasks = [
+      "text-generation",
+      "classification",
+      "summarization",
+      "question-answering",
+      "code-generation",
+      "embedding",
+    ];
+    const results = await Promise.all(
+      tasks.map((t) => fetchFromHuggingFace(t).catch(() => [] as ModelRecommendation[]))
+    );
+    const allHf = results.flat();
+    if (allHf.length > 0) {
+      allHf.sort((a, b) => b.score - a.score);
+      modelCache.set(cacheKey, {
+        data: { models: allHf, warningModel: allHf[0] },
+        expiresAt: now + CACHE_TTL_MS,
+      });
+      return allHf;
+    }
+  } catch {
+    console.warn("[Models] HF API unavailable for getAllModels, falling back to Supabase");
+  }
+
+  // ── Layer 2: Supabase DB ──
   try {
     const { data, error } = await supabaseAdmin()
       .from("models")
@@ -126,6 +171,7 @@ export async function getAllModels(): Promise<ModelRecommendation[]> {
     });
     return models;
   } catch {
+    // ── Layer 3: Hardcoded fallback ──
     const { modelDatabase } = await import("./modelsFallback.js");
     return Object.values(modelDatabase).flat();
   }

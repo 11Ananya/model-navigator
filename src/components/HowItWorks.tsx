@@ -315,7 +315,7 @@ export function HowItWorks() {
 
             {/* ── Node 4: Terminal Output ── */}
             <div ref={nodeRef3} data-pipeline-node>
-              <div className="rounded-xl border border-border/60 bg-[#0a0a0b] overflow-hidden h-full">
+              <div className="rounded-xl border border-border bg-[#0a0a0b] overflow-hidden h-full">
                 <h4 className="font-semibold text-[15px] px-4 pt-4 pb-2 text-white">
                   <span className="text-primary font-mono text-xs mr-2">
                     04
