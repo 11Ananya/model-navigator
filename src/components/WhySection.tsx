@@ -2,68 +2,85 @@ import { Check, X } from "lucide-react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { cn } from "@/lib/utils";
 
-const points = [
-  { text: "Model selection is fragmented -thousands of options, no single source of truth", positive: false },
-  { text: "Benchmarks don't reflect deployment reality", positive: false },
-  { text: "Hardware limits surface after you've already committed", positive: false },
-  { text: "Licensing risks are buried in model cards", positive: false },
-  { text: "Constraint-aware decisions, not marketing benchmarks", positive: true },
-  { text: "Explicit tradeoffs -you see what you're giving up", positive: true },
-  { text: "Curated metadata, no live model inference", positive: true },
-  { text: "No black box -every recommendation is explainable", positive: true },
+const problems = [
+  "Model selection is fragmented - thousands of options, no single source of truth",
+  "Benchmarks don't reflect deployment reality",
+  "Hardware limits surface after you've already committed",
+  "Licensing risks are buried in model cards",
+];
+
+const solutions = [
+  "Constraint-aware decisions, not marketing benchmarks",
+  "Explicit tradeoffs - you see what you're giving up",
+  "Curated metadata, no live model inference",
+  "No black box - every recommendation is explainable",
 ];
 
 export function WhySection() {
-  const { ref, isVisible } = useScrollAnimation<HTMLDivElement>();
+  const { ref: problemRef, isVisible: problemVisible } = useScrollAnimation<HTMLDivElement>();
+  const { ref: solutionRef, isVisible: solutionVisible } = useScrollAnimation<HTMLDivElement>();
 
   return (
-    <section
-      ref={ref}
-      className={cn("py-24 md:py-32 border-t border-border/50 scroll-fade-up", isVisible && "visible")}
-    >
+    <section className="py-24 md:py-32">
       <div className="container mx-auto px-6">
-        <div className="max-w-5xl mx-auto grid md:grid-cols-5 gap-12 md:gap-16 items-start">
-          {/* Left column -heading + description */}
-          <div className="md:col-span-2">
-            <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-4">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex items-center gap-3 md:gap-4 mb-4">
+            <img src="/logo_.png" alt="InfraLens" className="w-24 h-24 md:w-36 md:h-36 rounded-xl object-cover" />
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
               Why InfraLens
             </h2>
-            <p className="text-muted-foreground leading-relaxed">
-              Model selection shouldn't be guesswork. InfraLens helps teams make
-              better first decisions -not perfect ones.
-            </p>
           </div>
+          <p className="text-muted-foreground leading-relaxed mb-12 max-w-lg">
+            Model selection shouldn't be guesswork. InfraLens helps teams make
+            better first decisions - not perfect ones.
+          </p>
 
-          {/* Right column -key points as text rows */}
-          <div className="md:col-span-3 space-y-3">
-            {points.map((point) => (
-              <div key={point.text} className="flex items-start gap-3 py-2">
-                <div
-                  className={cn(
-                    "w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5",
-                    point.positive
-                      ? "bg-primary/10"
-                      : "bg-muted"
-                  )}
-                >
-                  {point.positive ? (
-                    <Check className="w-3 h-3 text-primary" />
-                  ) : (
-                    <X className="w-3 h-3 text-muted-foreground" />
-                  )}
-                </div>
-                <span
-                  className={cn(
-                    "text-sm leading-relaxed",
-                    point.positive
-                      ? "text-foreground font-medium"
-                      : "text-muted-foreground"
-                  )}
-                >
-                  {point.text}
-                </span>
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* The Problem */}
+            <div
+              ref={problemRef}
+              className={cn(
+                "glass-card border-destructive/20 p-6 scroll-fade-up",
+                problemVisible && "visible"
+              )}
+            >
+              <h3 className="font-semibold mb-4 text-destructive/80">The Problem</h3>
+              <div className="space-y-3">
+                {problems.map((text) => (
+                  <div key={text} className="flex items-start gap-3 py-1">
+                    <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 bg-destructive/10">
+                      <X className="w-3 h-3 text-destructive/70" />
+                    </div>
+                    <span className="text-sm leading-relaxed text-muted-foreground">
+                      {text}
+                    </span>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+
+            {/* The InfraLens Approach */}
+            <div
+              ref={solutionRef}
+              className={cn(
+                "glass-card border-primary/20 p-6 scroll-fade-up",
+                solutionVisible && "visible"
+              )}
+            >
+              <h3 className="font-semibold mb-4 text-primary">The InfraLens Approach</h3>
+              <div className="space-y-3">
+                {solutions.map((text) => (
+                  <div key={text} className="flex items-start gap-3 py-1">
+                    <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 bg-primary/10">
+                      <Check className="w-3 h-3 text-primary" />
+                    </div>
+                    <span className="text-sm leading-relaxed text-foreground font-medium">
+                      {text}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 

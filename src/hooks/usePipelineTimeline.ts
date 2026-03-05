@@ -72,7 +72,10 @@ export function usePipelineTimeline(
       gsap.set(outputLines, { opacity: 1 });
       gsap.set(mobileConnectors, { opacity: 0.6 });
       if (modelBadge) gsap.set(modelBadge, { opacity: 1 });
-      drawPaths.forEach((p) => (p.style.strokeDashoffset = "0"));
+      drawPaths.forEach((p) => {
+        p.style.strokeDashoffset = "0";
+        p.setAttribute("opacity", "1");
+      });
       gsap.set(flowPaths, { opacity: 0.6 });
       return;
     }
@@ -113,14 +116,7 @@ export function usePipelineTimeline(
     );
     if (modelBadge) tl.to(modelBadge, { opacity: 1, duration: 0.3 }, 0.6);
 
-    // 0.5 s — Path 1 draws → Node 2 enters
-    if (drawPaths[0]) {
-      tl.to(
-        drawPaths[0],
-        { strokeDashoffset: 0, duration: 0.8, ease: "power2.inOut" },
-        0.5
-      );
-    }
+    // 0.5 s — Node 2 enters, then Path 1 draws alongside it
     if (mobileConnectors[0]) {
       tl.to(mobileConnectors[0], { opacity: 0.6, duration: 0.3 }, 0.5);
     }
@@ -129,6 +125,14 @@ export function usePipelineTimeline(
       { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" },
       0.7
     );
+    if (drawPaths[0]) {
+      tl.set(drawPaths[0], { opacity: 1 }, 0.7);
+      tl.to(
+        drawPaths[0],
+        { strokeDashoffset: 0, duration: 0.8, ease: "power2.inOut" },
+        0.7
+      );
+    }
 
     // 1.0 s — Counter 847→23, dots dim, filter labels
     tl.to(
@@ -163,14 +167,7 @@ export function usePipelineTimeline(
       tl.to(flowPaths[0], { opacity: 0.6, duration: 0.3 }, 1.5);
     }
 
-    // 2.4 s — Path 2 draws → Node 3 enters
-    if (drawPaths[1]) {
-      tl.to(
-        drawPaths[1],
-        { strokeDashoffset: 0, duration: 0.8, ease: "power2.inOut" },
-        2.4
-      );
-    }
+    // 2.4 s — Node 3 enters, then Path 2 draws alongside it
     if (mobileConnectors[1]) {
       tl.to(mobileConnectors[1], { opacity: 0.6, duration: 0.3 }, 2.4);
     }
@@ -179,6 +176,14 @@ export function usePipelineTimeline(
       { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" },
       2.6
     );
+    if (drawPaths[1]) {
+      tl.set(drawPaths[1], { opacity: 1 }, 2.6);
+      tl.to(
+        drawPaths[1],
+        { strokeDashoffset: 0, duration: 0.8, ease: "power2.inOut" },
+        2.6
+      );
+    }
 
     // 2.8 s — Bar chart fills
     bars.forEach((bar, i) => {
@@ -199,14 +204,7 @@ export function usePipelineTimeline(
       tl.to(flowPaths[1], { opacity: 0.6, duration: 0.3 }, 3.4);
     }
 
-    // 3.6 s — Path 3 draws → Node 4 enters
-    if (drawPaths[2]) {
-      tl.to(
-        drawPaths[2],
-        { strokeDashoffset: 0, duration: 0.8, ease: "power2.inOut" },
-        3.6
-      );
-    }
+    // 3.6 s — Node 4 enters, then Path 3 draws alongside it
     if (mobileConnectors[2]) {
       tl.to(mobileConnectors[2], { opacity: 0.6, duration: 0.3 }, 3.6);
     }
@@ -215,6 +213,14 @@ export function usePipelineTimeline(
       { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" },
       3.8
     );
+    if (drawPaths[2]) {
+      tl.set(drawPaths[2], { opacity: 1 }, 3.8);
+      tl.to(
+        drawPaths[2],
+        { strokeDashoffset: 0, duration: 0.8, ease: "power2.inOut" },
+        3.8
+      );
+    }
 
     // 4.0 s — Output lines appear one by one
     tl.to(

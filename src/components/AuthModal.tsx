@@ -61,6 +61,9 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
       <DialogContent className="sm:max-w-md rounded-2xl">
         <DialogHeader>
           <DialogTitle>Welcome to InfraLens</DialogTitle>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Unlock unlimited recommendations, saved configs, and AI-enhanced rankings.
+          </p>
         </DialogHeader>
 
         <Tabs defaultValue="signin" onValueChange={reset}>

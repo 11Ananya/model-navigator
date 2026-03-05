@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { ChevronDown, Zap, AlertTriangle, Check, Info, Sparkles, BookmarkPlus, Trash2, FolderOpen } from "lucide-react";
+import { ChevronDown, Zap, AlertTriangle, Check, Info, Sparkles, BookmarkPlus, Trash2, FolderOpen, RotateCcw } from "lucide-react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
@@ -83,7 +83,7 @@ export function DemoInterface() {
             isVisible && "visible"
           )}
         >
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
             Decision Preview
           </h2>
           <p className="text-lg text-muted-foreground">
@@ -121,6 +121,7 @@ export function DemoInterface() {
                     isPending={isPending}
                     isError={isError}
                     usedLlmReranking={recommendations?.usedLlmReranking ?? false}
+                    onRetry={handleGetRecommendations}
                   />
               </div>
             </div>
@@ -426,7 +427,7 @@ function InputPanel({
       {/* Get Recommendations — first request free for anon users */}
       {user || !freeUsed ? (
         <Button
-          className="w-full rounded-xl gap-2"
+          className={cn("w-full rounded-xl gap-2", isPending && "recommend-pulse")}
           onClick={onGetRecommendations}
           disabled={isPending}
         >
@@ -443,7 +444,7 @@ function InputPanel({
             Sign in to continue
           </Button>
           <p className="text-xs text-center text-muted-foreground">
-            First recommendation free — sign in for unlimited access
+            First recommendation free - sign in for unlimited access
           </p>
         </div>
       )}
@@ -498,16 +499,35 @@ function OutputPanel({
   isPending,
   isError,
   usedLlmReranking,
+  onRetry,
 }: {
   recommendations: (import("@/lib/schemas").RecommendationResult & { usedLlmReranking: boolean }) | null;
   isPending: boolean;
   isError: boolean;
   usedLlmReranking: boolean;
+  onRetry: () => void;
 }) {
   if (isError) {
     return (
-      <div className="card-depth p-8 text-center text-muted-foreground">
-        <p className="text-sm">Could not fetch recommendations. Make sure the server is running.</p>
+      <div className="card-depth p-8">
+        <div className="flex flex-col items-center text-center gap-4">
+          <div className="w-10 h-10 rounded-full bg-destructive/10 flex items-center justify-center">
+            <AlertTriangle className="w-5 h-5 text-destructive" />
+          </div>
+          <div>
+            <p className="text-sm font-medium mb-1">Could not fetch recommendations</p>
+            <p className="text-xs text-muted-foreground">Make sure the server is running and try again.</p>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="rounded-xl gap-2"
+            onClick={onRetry}
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            Retry
+          </Button>
+        </div>
       </div>
     );
   }
@@ -560,7 +580,8 @@ function ModelCard({
     <div
       className={cn(
         "card-depth light-interaction hover-lift-3d overflow-hidden transition-all duration-300",
-        isPrimary && "ring-2 ring-primary/20"
+        isPrimary && "ring-2 ring-primary/20 bg-gradient-to-br from-primary/[0.04] to-transparent",
+        !isPrimary && "opacity-90"
       )}
     >
       <div className="p-5">
@@ -575,9 +596,21 @@ function ModelCard({
             <h4 className="font-semibold">{model.name}</h4>
             <p className="text-sm text-muted-foreground">{model.provider}</p>
           </div>
-          <div className="text-right">
-            <div className="text-2xl font-bold text-primary">{model.score}</div>
-            <div className="text-xs text-muted-foreground">score</div>
+          <div className="text-right flex flex-col items-center justify-center">
+            {isPrimary ? (
+              <div className="relative w-14 h-14 flex items-center justify-center">
+                <svg className="absolute inset-0 w-14 h-14" viewBox="0 0 48 48">
+                  <circle cx="24" cy="24" r="20" fill="none" stroke="hsl(var(--border))" strokeWidth="2.5" />
+                  <circle cx="24" cy="24" r="20" fill="none" stroke="hsl(var(--primary))" strokeWidth="2.5"
+                    strokeLinecap="round" strokeDasharray={`${(model.score / 100) * 125.6} 125.6`}
+                    transform="rotate(-90 24 24)" />
+                </svg>
+                <span className="text-lg font-bold text-primary">{model.score}</span>
+              </div>
+            ) : (
+              <div className="text-2xl font-bold text-primary">{model.score}</div>
+            )}
+            <div className="text-xs text-muted-foreground mt-0.5">score</div>
           </div>
         </div>
 

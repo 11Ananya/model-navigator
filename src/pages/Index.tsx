@@ -14,7 +14,9 @@ const Index = () => {
         <main>
           <Hero />
           <DemoInterface />
-          <HowItWorks />
+          <div className="bg-secondary/20">
+            <HowItWorks />
+          </div>
           <WhySection />
         </main>
         <Footer />

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Moon, Sun, LogOut, User } from "lucide-react";
+import { Moon, Sun, LogOut, User, Menu } from "lucide-react";
 import { useTheme } from "./ThemeProvider";
 import { Button } from "./ui/button";
 import {
@@ -8,6 +8,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "./ui/sheet";
 import { AuthModal } from "./AuthModal";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -15,6 +22,7 @@ export function Navbar() {
   const { theme, toggleTheme } = useTheme();
   const { user, signOut } = useAuth();
   const [authOpen, setAuthOpen] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -34,7 +42,7 @@ export function Navbar() {
               <span className="font-semibold text-base tracking-[-0.03em]">InfraLens</span>
             </div>
 
-            {/* Navigation Links */}
+            {/* Navigation Links (desktop) */}
             <div className="hidden md:flex items-center gap-6">
               <button
                 onClick={() => scrollToSection("demo")}
@@ -96,6 +104,73 @@ export function Navbar() {
                   Sign in
                 </Button>
               )}
+
+              {/* Mobile hamburger */}
+              <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+                <SheetTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="rounded-xl md:hidden"
+                    aria-label="Open menu"
+                  >
+                    <Menu className="h-4 w-4" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-[280px]">
+                  <SheetHeader>
+                    <SheetTitle>Menu</SheetTitle>
+                  </SheetHeader>
+                  <div className="flex flex-col gap-4 mt-6">
+                    <button
+                      onClick={() => {
+                        scrollToSection("demo");
+                        setSheetOpen(false);
+                      }}
+                      className="text-sm font-medium text-foreground/70 hover:text-foreground transition-colors text-left py-2"
+                    >
+                      Demo
+                    </button>
+                    <button
+                      onClick={() => {
+                        scrollToSection("how-it-works");
+                        setSheetOpen(false);
+                      }}
+                      className="text-sm font-medium text-foreground/70 hover:text-foreground transition-colors text-left py-2"
+                    >
+                      How it works
+                    </button>
+                    <div className="border-t border-border pt-4">
+                      {user ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full rounded-xl gap-2"
+                          onClick={() => {
+                            signOut();
+                            setSheetOpen(false);
+                          }}
+                        >
+                          <LogOut className="h-3.5 w-3.5" />
+                          Sign out
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full rounded-xl"
+                          onClick={() => {
+                            setAuthOpen(true);
+                            setSheetOpen(false);
+                          }}
+                        >
+                          Sign in
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </SheetContent>
+              </Sheet>
             </div>
           </div>
         </nav>

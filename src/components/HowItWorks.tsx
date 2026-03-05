@@ -104,11 +104,11 @@ export function HowItWorks() {
   usePipelineTimeline(pipelineRef);
 
   return (
-    <section id="how-it-works" className="py-24 md:py-32 border-t border-border/50">
+    <section id="how-it-works" className="py-24 md:py-32">
       <div className="container mx-auto px-6 max-w-6xl">
         {/* ── Header ── */}
         <div className="mb-16">
-          <h2 className="text-2xl md:text-3xl font-bold mb-3">
+          <h2 className="text-3xl md:text-4xl font-bold mb-3">
             How it works
           </h2>
           <p className="text-muted-foreground max-w-lg">
@@ -134,6 +134,7 @@ export function HowItWorks() {
                   strokeWidth={2}
                   fill="none"
                   data-draw-path
+                  opacity={0}
                   style={{
                     filter:
                       "drop-shadow(0 0 3px hsl(var(--primary) / 0.3))",
