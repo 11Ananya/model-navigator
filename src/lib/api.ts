@@ -1,5 +1,7 @@
 import type { RecommendationConfig, RecommendationResult } from "./schemas";
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "";
+
 // Retrieve the stored Supabase session token (set by useAuth hook)
 function getAuthHeader(): Record<string, string> {
   const token = sessionStorage.getItem("infralens-access-token");
@@ -10,7 +12,7 @@ function getAuthHeader(): Record<string, string> {
 export async function fetchRecommendations(
   config: RecommendationConfig
 ): Promise<RecommendationResult & { usedLlmReranking: boolean }> {
-  const res = await fetch("/api/recommendations", {
+  const res = await fetch(`${API_BASE}/api/recommendations`, {
     method: "POST",
     headers: { "Content-Type": "application/json", ...getAuthHeader() },
     body: JSON.stringify(config),
@@ -25,7 +27,7 @@ export async function fetchRecommendations(
 }
 
 export async function fetchSavedConfigs() {
-  const res = await fetch("/api/configs", {
+  const res = await fetch(`${API_BASE}/api/configs`, {
     headers: getAuthHeader(),
   });
   if (!res.ok) throw new Error("Failed to fetch saved configs");
@@ -33,7 +35,7 @@ export async function fetchSavedConfigs() {
 }
 
 export async function createSavedConfig(payload: RecommendationConfig & { name: string }) {
-  const res = await fetch("/api/configs", {
+  const res = await fetch(`${API_BASE}/api/configs`, {
     method: "POST",
     headers: { "Content-Type": "application/json", ...getAuthHeader() },
     body: JSON.stringify({
@@ -57,7 +59,7 @@ export async function createSavedConfig(payload: RecommendationConfig & { name: 
 }
 
 export async function deleteSavedConfig(id: string) {
-  const res = await fetch(`/api/configs/${id}`, {
+  const res = await fetch(`${API_BASE}/api/configs/${id}`, {
     method: "DELETE",
     headers: getAuthHeader(),
   });
